@@ -1,0 +1,615 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>BLDEA Online Voting System — Admin Enhanced</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@200;300;400;600;700&display=swap" rel="stylesheet">
+<!-- SheetJS (XLSX) for real .xlsx export -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<style>
+*{
+    margin:0; 
+    padding:0;
+    box-sizing:border-box;
+    font-family:'Poppins',sans-serif;
+}
+body{
+    min-height:100vh;
+    background:#25252b;
+    display:flex;
+    justify-content:center;
+    align-items:flex-start;
+    padding:30px
+}
+  /* RIGHT TEXT - this is the important part */
+  .right-text {
+    position:absolute;
+    right:56px;
+    top:50%;
+    transform:translateY(-50%);
+    width:40%;
+    z-index:2;
+    text-align:left;
+    color:white;
+    line-height:1.02;
+    font-weight:500;
+    font-size:28px;
+    letter-spacing:0.5px;
+    margin:0;
+    text-shadow: 0 2px 0 rgba(0,0,0,0.5);
+    pointer-events:none;
+  }  
+.hidden{
+    display:none;
+}
+.container{
+    position:relative;
+    width:850px;
+    height:520px;
+    border:2px solid #e46033;
+    box-shadow:0 0 25px #e46033;
+    overflow:hidden;
+    background:#25252b;
+}
+.curved-shape{
+    position:absolute;
+    right:0;
+    top:-80px;
+    width:850px;
+    height:650px;
+    background:linear-gradient(45deg,#25252b,#e46033);
+    transform:rotate(10deg) skewY(40deg);
+    transform-origin:bottom right;
+    transition:1.5s ease;z-index:0;
+}
+.container.active .curved-shape{
+    transform:rotate(0deg) skewY(0deg);
+}
+.curved-shape2{
+    position:absolute;
+    left:250px;
+    top:100%;
+    width:950px;
+    height:700px;
+    background:#25252b;
+    border-top:3px solid #e46033;
+    transform:rotate(0deg) skewY(0deg);
+    transform-origin:bottom left;
+    transition:1.5s ease;
+    z-index:0;
+}
+.container.active .curved-shape2{
+    transform:rotate(-12deg) skewY(-40deg);
+}
+.form-box{
+    position:absolute;
+    top:0;
+    width:50%;
+    height:100%;
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    padding:40px;
+    z-index:10;
+    color:white;
+}
+.form-box h2{
+    font-size:32px;
+    margin-bottom:15px;
+}
+.input-box{
+    margin-top:20px;
+}
+.input-box input{
+    width:100%;
+    padding:12px;
+    font-size:16px;
+    background:transparent;
+    border:none;
+    border-bottom:2px solid #fff;
+    color:white;
+    transition:.4s;
+}
+.input-box input:focus{
+    border-bottom:2px solid #e46033;
+}
+.btn{
+    margin-top:15px;
+    padding:12px;
+    width:100%;
+    border-radius:40px;
+    border:2px solid #e46033;
+    background:transparent;
+    color:white;
+    cursor:pointer;
+    font-size:16px;
+    font-weight:600;
+    transition:0.4s;
+}
+.btn:hover{
+    background:#e46033;
+}
+.switch{
+    margin-top:12px;
+    text-align:center;
+}
+.switch span{
+    color:#e46033;
+    cursor:pointer;
+    font-weight:600;
+}
+.Login{
+    left:0;
+      }
+.Register{
+    right:0;
+    opacity:0;
+    pointer-events:none;
+}
+.container.active .Login{
+    transform:translateX(-100%);
+    opacity:0;
+}
+.container.active .Register{
+    opacity:1;
+    pointer-events:auto;
+    transform:translateX(-100%);
+}
+header{
+    position:fixed;
+    top:10px;
+    left:50%;
+    transform:translateX(-50%);
+    padding:12px 20px;
+    color:white;
+    background:linear-gradient(90deg,#ff6a00,#ffb347);
+    display:flex;
+    gap:12px;
+    align-items:center;
+    border-radius:10px;
+    z-index:999;
+}
+header .spacer{
+    width:20px;
+}
+.card{
+    background:white;
+    width:90%;
+    max-width:850px;
+    margin:90px auto;
+    padding:25px;
+    border-radius:12px;
+    box-shadow:0 0 20px rgba(0,0,0,0.2);
+}
+.candidate{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    border:1px solid #aaa;
+    padding:12px;
+    border-radius:8px;
+    margin-top:10px;
+}
+.candidate img{
+    width:40px;
+    height:40px;
+    object-fit:cover;
+    border-radius:6px;
+}
+table{
+    width:100%;
+    margin-top:10px;
+    border-collapse:collapse;
+}
+th,td{
+    padding:10px;
+    border-bottom:1px solid #ddd;
+}
+#voteMsg{
+    font-size:18px;
+    color:green;
+    margin-top:10px;
+}
+.adminBtns{
+    display:flex;
+    gap:10px;
+    margin-top:12px;
+}
+.file-input{
+    display:flex;
+    gap:8px;
+    align-items:center;
+}
+.small{
+    width:150px;
+    padding:8px;
+}
+</style>
+</head>
+<body>
+<!-- LOGIN + REGISTER SCREEN -->
+<div class="container" id="authBox">
+   <div class="right-text">
+       <h3>Your vote. Your voice. Use it.</h3>
+       <p><h6>If you believe in tomorrow, act today—vote.</h6></p>
+      </div>
+    <div class="form-box Login">
+        <h1>BLDEA COLLEGE VOTING SYSTEM</h1>
+        <h2>Login</h2>
+        <div class="input-box"><input id="loginUSN" placeholder="Enter USN"></div>
+        <div class="input-box"><input id="loginPass" type="password" placeholder="Password"></div>
+        <button class="btn" onclick="loginStudent()">Login</button>
+        <p id="loginMsg" style="color:yellow;margin-top:10px;"></p>
+        <div class="switch">New user? <span onclick="toggleForm()">Register</span></div>
+    </div>
+    <div class="form-box Register">
+        <h1>BLDEA COLLEGE VOTING SYSTEM</h1>
+        <h2>Register</h2>
+        <!-- IDs changed to match JS -->
+        <div class="input-box" style="margin-top:0.1px;"><input id="regName" placeholder="Enter name"></div>
+        <div class="input-box" style="margin-top:0.1px;"><input id="regEmail" type="email" placeholder="Enter your email"></div>
+        <div class="input-box" style="margin-top:0.1px;"><input id="regPhone" type="tel" placeholder="Enter phone no"></div>
+        <div class="input-box" style="margin-top:0.1px;"><input id="regUSN" placeholder="Enter USN"></div>
+        <div class="input-box" style="margin-top:0.1px;"><input id="regPass" type="password" placeholder="Create Password"></div>
+        <button class="btn" onclick="registerStudent()">Register</button>
+        <p id="regMsg" style="color:yellow;margin-top:10px;"></p>
+        <div class="switch">Already registered? <span onclick="toggleForm()">Login</span></div>
+    </div>
+    <div class="curved-shape"></div>
+    <div class="curved-shape2"></div>
+</div>
+<!-- AFTER LOGIN HEADER  -->
+<header id="mainHeader" class="hidden">
+    <h3 style="margin-right:12px;">BLDEA Online Voting</h3>
+    <div class="spacer"></div>
+    <button class="btn small" id="adminBtn" onclick="openAdminLogin()" style="display:none">Admin</button>
+    <button class="btn small" onclick="logout()">Logout</button>
+</header>
+<!-- VOTING PAGE -->
+<div id="vote" class="card hidden">
+    <h2>Cast Your Vote</h2>
+    <p id="voteStatus"></p>
+    <form id="voteForm">
+        <div id="candidateList"></div>
+        <button class="btn" id="voteButton" style="background:#222">Submit Vote</button>
+    </form>
+    <p id="voteMsg"></p>
+</div>
+<!-- ADMIN LOGIN (modal style card) -->
+<div id="admin" class="card hidden">
+    <h2>Admin Login</h2>
+    <input id="adminPass" placeholder="Password" type="password" style="width:100%;padding:10px;margin-top:8px">
+    <div class="adminBtns">
+        <button class="btn small" onclick="unlockAdmin()" style="background:#222">Login</button>
+        <button class="btn small" onclick="closeAdminLogin()" style="background:#222">Close</button>
+    </div>
+    <p id="adminLoginMsg" style="color:red;margin-top:10px"></p>
+</div>
+<!-- ADMIN PANEL -->
+<div id="adminPanel" class="card hidden">
+    <h2>Results</h2>
+    <div id="results"></div>
+
+    <div class="adminBtns">
+        <button class="btn" onclick="downloadVotes()" style="background:#222">Download Votes (.xlsx)</button>
+        <button class="btn" onclick="resetVotes()" style="background:#222;">Reset Votes</button>
+        <button class="btn" onclick="closeAdminPanel()" style="background:#777;">Close Admin Panel</button>
+    </div>
+
+    <br>
+    <h2>Manage Candidates</h2>
+    <input id="cName" placeholder="Candidate Name" style="width:48%;padding:10px;margin-top:8px">
+    <input id="cRole" placeholder="Role" style="width:48%;padding:10px;margin-top:8px;float:right">
+    <div style="clear:both;margin-top:8px"></div>
+
+    <div style="display:flex;gap:8px;align-items:center;margin-top:8px">
+        <input id="cSymbolURL" placeholder="Symbol Image URL (optional)" style="flex:1;padding:8px">
+        <label style="display:inline-block;padding:8px;background:#eaeaea;border-radius:8px;cursor:pointer">
+            Upload Image <input id="cSymbolFile" type="file" accept="image/*" style="display:none" onchange="handleImageUpload(event)">
+        </label>
+    </div>
+    <div style="margin-top:8px;display:flex;gap:8px">
+        <button class="btn" onclick="addCandidate()"style="background:#222">Add Candidate</button>
+        <button class="btn" onclick="clearCandidateForm()" style="background:#888">Clear</button>
+    </div>
+ <div id="candTable"></div>
+</div>
+
+<script>
+/* --------------------
+   BASIC UI TOGGLING
+----------------------*/
+function toggleForm(){document.getElementById('authBox').classList.toggle('active')}
+// When opening admin login we hide voting area so only admin UI appears
+function openAdminLogin(){
+    document.getElementById('vote').classList.add('hidden');
+    document.getElementById('admin').classList.remove('hidden');
+}
+function closeAdminLogin(){
+    // close login and return back to vote view
+    document.getElementById('admin').classList.add('hidden');
+    document.getElementById('adminLoginMsg').innerText='';
+    // show vote again only if user logged in
+    if(sessionStorage.getItem('usn')){
+        document.getElementById('vote').classList.remove('hidden');
+    } else {
+        // if no session, show auth form
+        document.getElementById('authBox').classList.remove('hidden');
+    }
+}
+// When admin panel is opened (after unlock) hide vote and auth completely
+function closeAdminPanel(){
+    document.getElementById('adminPanel').classList.add('hidden');
+    // return to vote view if user is logged in
+    if(sessionStorage.getItem('usn')){
+        document.getElementById('vote').classList.remove('hidden');
+    } else {
+        document.getElementById('authBox').classList.remove('hidden');
+    }
+}
+/* --------------------
+   ALLOWED USN — keep lowercase
+----------------------*/
+const allowedUSN = [
+    "2bl23cs001","2bl23cs002","2bl23cs003","2bl23cs004","2bl23cs005",
+    "2bl23cs006","2bl23cs007","2bl23cs008","2bl23cs009","2bl23cs010",
+    "2bl23cs011","2bl23cs012","2bl23cs013","2bl23cs014","2bl23cs015",
+    "2bl23cs016","2bl23cs017","2bl23cs018","2bl23cs019","2bl23cs020",
+    "2bl23cs021","2bl23cs022","2bl23cs023","2bl23cs024","2bl23cs025",
+    "2bl23cs026","2bl23cs027","2bl23cs028","2bl23cs029","2bl23cs030",
+    "2bl23cs031","2bl23cs032","2bl23cs033","2bl23cs034","2bl23cs035",
+    "2bl23cs036","2bl23cs037","2bl23cs038","2bl23cs039","2bl23cs040",
+    "2bl23cs041","2bl23cs042","2bl23cs043","2bl23cs044","2bl23cs045",
+    "2bl23cs046","2bl23cs047","2bl23cs048","2bl23cs049","2bl23cs050",
+    "2bl23cs051","2bl23cs052","2bl23cs053","2bl23cs054","2bl23cs055",
+    "2bl23cs056","2bl23cs057","2bl23cs058","2bl23cs059","2bl23cs060",
+    "2bl23cs061","2bl23cs062","2bl23cs063","2bl23cs064","2bl23cs065",
+    "2bl23cs066","2bl23cs067","2bl23cs068","2bl23cs069","2bl23cs070",
+    "2bl23cs071","2bl23cs072","2bl23cs073","2bl23cs074","2bl23cs075",
+    "2bl23cs076","2bl23cs077","2bl23cs078","2bl23cs079","2bl23cs080",
+    "2bl23cs081","2bl23cs082","2bl23cs083","2bl23cs084","2bl23cs085",
+    "2bl23cs086","2bl23cs087","2bl23cs088","2bl23cs089","2bl23cs090",
+    "2bl23cs091","2bl23cs092","2bl23cs093","2bl23cs094","2bl23cs095",
+    "2bl23cs096","2bl23cs097","2bl23cs098","2bl23cs099","2bl23cs100",
+];
+/* --------------------
+   DEFAULT CANDIDATES
+----------------------*/
+if(!localStorage.getItem('candidates')){
+    localStorage.setItem('candidates',JSON.stringify([
+        {id:'c1',name:'ALOK P',role:'SECRETARY',symbol:"https://via.placeholder.com/80?text=Alok"},
+        {id:'c2',name:'ABHIJEET P',role:'MEDIA HEAD',symbol:"https://via.placeholder.com/80?text=Abhijeet"},
+        {id:'c3',name:'AMIT',role:'SPORTS HEAD',symbol:"https://via.placeholder.com/80?text=Amit"}
+    ]));
+}
+/* --------------------
+   REGISTER
+----------------------*/
+function registerStudent(){
+
+    const name = document.getElementById('regName').value.trim();
+    const email = document.getElementById('regEmail').value.trim();
+    const phone = document.getElementById('regPhone').value.trim();
+    const usn = document.getElementById('regUSN').value.trim().toLowerCase();
+    const pass = document.getElementById('regPass').value.trim();
+
+    const regMsg = document.getElementById('regMsg');
+    regMsg.style.color = 'yellow';
+
+    if(!name || !email || !phone || !usn || !pass){
+        regMsg.innerText = "Enter all details";
+        return;
+    }
+
+    if(!allowedUSN.includes(usn)){
+        regMsg.innerText = "USN not allowed";
+        return;
+    }
+
+    let users = JSON.parse(localStorage.getItem('users') || '{}');
+
+    if(users[usn]){
+        regMsg.innerText = "USN already registered";
+        return;
+    }
+
+    users[usn] = {
+        pass: pass,
+        name: name,
+        email: email,
+        phone: phone
+    };
+
+    localStorage.setItem("users", JSON.stringify(users));
+
+    regMsg.style.color = "lightgreen";
+    regMsg.innerText = "Registered! Login now.";
+}
+
+/* --------------------
+   LOGIN
+----------------------*/
+function loginStudent(){
+    const usn=document.getElementById('loginUSN').value.trim().toLowerCase();
+    const pass=document.getElementById('loginPass').value.trim();
+    const loginMsg=document.getElementById('loginMsg'); loginMsg.style.color='yellow';
+    if(!allowedUSN.includes(usn)){ loginMsg.innerText='USN not allowed'; return; }
+    let users=JSON.parse(localStorage.getItem('users')||'{}');
+    if(!users[usn]){ loginMsg.innerText='USN not registered'; return; }
+    // FIX: compare stored password property
+    if(users[usn].pass !== pass){ loginMsg.innerText='Wrong password'; return; }
+    sessionStorage.setItem('usn',usn);
+    // show header, vote page, and admin button (Option B)
+    document.getElementById('authBox').classList.add('hidden');
+    document.getElementById('mainHeader').classList.remove('hidden');
+    document.getElementById('vote').classList.remove('hidden');
+    document.getElementById('adminBtn').style.display='inline-block';
+    loadVotePage();
+}
+/* --------------------
+   LOGOUT
+----------------------*/
+function logout(){ sessionStorage.clear(); location.reload(); }
+
+/* --------------------
+   LOAD VOTE PAGE
+----------------------*/
+function loadVotePage(){
+    const usn=sessionStorage.getItem('usn');
+    const candidates=JSON.parse(localStorage.getItem('candidates')||'[]');
+    const votes=JSON.parse(localStorage.getItem('votes')||'[]');
+    const hasVoted=votes.some(v=>v.usn===usn);
+    document.getElementById('voteStatus').innerText='Logged in as: '+usn;
+    const candidateList=document.getElementById('candidateList'); candidateList.innerHTML='';
+    candidates.forEach(c=>{
+        const disabled = hasVoted ? 'disabled' : '';
+        candidateList.innerHTML+=`
+            <label class="candidate">
+                <input type="radio" name="cand" value="${c.id}" ${disabled}>
+                <img src="${c.symbol}">
+                <div><b>${c.name}</b><br>${c.role}</div>
+            </label>
+        `;
+    });
+    if(hasVoted){ document.getElementById('voteMsg').innerText='You already voted!'; document.getElementById('voteButton').disabled=true;} else { document.getElementById('voteMsg').innerText=''; document.getElementById('voteButton').disabled=false; }
+}
+/* --------------------
+   SUBMIT VOTE
+----------------------*/
+document.getElementById('voteForm').addEventListener('submit',function(e){
+    e.preventDefault();
+    const usn=sessionStorage.getItem('usn');
+    if(!usn){ alert('Not logged in'); return; }
+    let votes=JSON.parse(localStorage.getItem('votes')||'[]');
+    if(votes.some(v=>v.usn===usn)){ document.getElementById('voteMsg').innerText='Already voted!'; return; }
+    const cand=document.querySelector("input[name='cand']:checked");
+    if(!cand){ alert('Select a candidate'); return; }
+    votes.push({ usn, candidate:cand.value, time:new Date().toISOString() });
+    localStorage.setItem('votes',JSON.stringify(votes));
+    document.getElementById('voteMsg').innerText='Vote Submitted!';
+    document.getElementById('voteButton').disabled=true;
+    // refresh admin results if open
+    if(!document.getElementById('adminPanel').classList.contains('hidden')) renderResults();
+});
+/* --------------------
+   ADMIN LOGIN
+----------------------*/
+function unlockAdmin(){
+    const pass=document.getElementById('adminPass').value;
+    const msg=document.getElementById('adminLoginMsg'); msg.innerText='';
+    if(pass==='admin8792'){
+        document.getElementById('admin').classList.add('hidden');
+        document.getElementById('adminPanel').classList.remove('hidden');
+        // ensure voting UI stays hidden while admin panel open
+        document.getElementById('vote').classList.add('hidden');
+        document.getElementById('authBox').classList.add('hidden');
+        renderResults(); renderCandTable();
+    } else { msg.innerText='Wrong password'; }
+}
+/* --------------------
+   SHOW RESULTS
+----------------------*/
+function renderResults(){
+    const cand=JSON.parse(localStorage.getItem('candidates')||'[]');
+    const votes=JSON.parse(localStorage.getItem('votes')||'[]');
+    let count={}; cand.forEach(c=>count[c.id]=0);
+    votes.forEach(v=>{ if(count[v.candidate]!==undefined) count[v.candidate]++; });
+    let html='<table><tr><th>Symbol</th><th>Name</th><th>Role</th><th>Votes</th></tr>';
+    cand.forEach(c=>{
+        html+=`<tr>
+            <td><img src="${c.symbol}" style="width:40px;height:40px;object-fit:cover"></td>
+            <td>${c.name}</td>
+            <td>${c.role}</td>
+            <td>${count[c.id]||0}</td>
+        </tr>`;
+    });
+    html+='</table>';
+    document.getElementById('results').innerHTML=html;
+}
+/* --------------------
+   CANDIDATE TABLE
+----------------------*/
+function renderCandTable(){
+    const cand=JSON.parse(localStorage.getItem('candidates')||'[]');
+    let html='<table><tr><th>Symbol</th><th>Name</th><th>Role</th><th>Delete</th></tr>';
+    cand.forEach((c,i)=>{
+        html+=`<tr>
+<td><img src="${c.symbol}" style="width:40px;height:40px;object-fit:cover"></td>
+<td>${c.name}</td>
+<td>${c.role}</td>
+<td><button class="btn small" onclick="delCand(${i})" style="background:#c0392b">Delete</button></td>
+</tr>`;
+    });
+    html+='</table>';
+    document.getElementById('candTable').innerHTML=html;
+}
+/* --------------------
+   ADD CANDIDATE (supports URL or uploaded image)
+----------------------*/
+let uploadedCandidateDataURL = null;
+function handleImageUpload(e){
+    const file=e.target.files[0];
+    if(!file) return;
+    const reader=new FileReader();
+    reader.onload=function(ev){ uploadedCandidateDataURL = ev.target.result; };
+    reader.readAsDataURL(file);
+}
+function clearCandidateForm(){ document.getElementById('cName').value=''; document.getElementById('cRole').value=''; document.getElementById('cSymbolURL').value=''; document.getElementById('cSymbolFile').value=null; uploadedCandidateDataURL=null; }
+
+function addCandidate(){
+    const name=document.getElementById('cName').value.trim();
+    const role=document.getElementById('cRole').value.trim();
+    const url=document.getElementById('cSymbolURL').value.trim();
+    if(!name||!role){ alert('Enter all fields'); return; }
+    const cand=JSON.parse(localStorage.getItem('candidates')||'[]');
+    const id='c'+Math.random().toString(36).slice(2,8);
+    const symbol = uploadedCandidateDataURL || url || 'https://via.placeholder.com/80';
+    cand.push({id,name,role,symbol});
+    localStorage.setItem('candidates',JSON.stringify(cand));
+    clearCandidateForm(); renderResults(); renderCandTable();
+}
+/* DELETE CANDIDATE */
+function delCand(i){
+    if(!confirm('Delete candidate?')) return;
+    let cand=JSON.parse(localStorage.getItem('candidates')||'[]');
+    const removed = cand.splice(i,1);
+    localStorage.setItem('candidates',JSON.stringify(cand));
+    renderResults(); renderCandTable();
+}
+/* --------------------
+   DOWNLOAD VOTES as real .xlsx using SheetJS
+----------------------*/
+function downloadVotes(){
+    const votes=JSON.parse(localStorage.getItem('votes')||'[]');
+    const cand=JSON.parse(localStorage.getItem('candidates')||'[]');
+    const cmap = {};
+    cand.forEach(c=>cmap[c.id]={name:c.name,role:c.role,symbol:c.symbol});
+    const final = votes.map(v=>({
+        USN: v.usn,
+        Candidate: cmap[v.candidate]?.name || v.candidate,
+        Role: cmap[v.candidate]?.role || '',
+        Symbol: cmap[v.candidate]?.symbol || '',
+        Time: new Date(v.time).toLocaleString()
+    }));
+    if(final.length===0){ alert('No votes to download'); return; }
+    const ws = XLSX.utils.json_to_sheet(final);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, 'Votes');
+    XLSX.writeFile(wb, 'bldea_votes.xlsx');
+}
+/* --------------------
+   RESET VOTES
+----------------------*/
+function resetVotes(){ if(!confirm('Reset all votes?')) return; localStorage.removeItem('votes'); renderResults(); alert('Votes reset'); }
+
+/* --------------------
+   INITIAL UI: if session exists show logged in views
+----------------------*/
+(function init(){
+    const usn=sessionStorage.getItem('usn');
+    if(usn){ document.getElementById('authBox').classList.add('hidden'); document.getElementById('mainHeader').classList.remove('hidden'); document.getElementById('vote').classList.remove('hidden'); document.getElementById('adminBtn').style.display='inline-block'; loadVotePage(); }
+})();
+</script>
+</body>
+</html>

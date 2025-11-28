@@ -237,6 +237,7 @@ th,td{
     <div class="form-box Login">
         <h1>BLDEA COLLEGE VOTING SYSTEM</h1>
         <h2>Login</h2>
+         <div class="input-box" style="margin-top:0.1px;"><input id="regName" placeholder="Enter name"></div>
         <div class="input-box"><input id="loginUSN" placeholder="Enter USN"></div>
         <div class="input-box"><input id="loginPass" type="password" placeholder="Password"></div>
         <button class="btn" onclick="loginStudent()">Login</button>
@@ -431,6 +432,7 @@ function registerStudent(){
    LOGIN
 ----------------------*/
 function loginStudent(){
+    const name = document.getElementById('regName').value.trim();
     const usn=document.getElementById('loginUSN').value.trim().toLowerCase();
     const pass=document.getElementById('loginPass').value.trim();
     const loginMsg=document.getElementById('loginMsg'); loginMsg.style.color='yellow';

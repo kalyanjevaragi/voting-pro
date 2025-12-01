@@ -7,7 +7,9 @@
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@200;300;400;600;700&display=swap" rel="stylesheet">
 <!-- SheetJS (XLSX) for real .xlsx export -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+
 <style>
+    
 *{
     margin:0; 
     padding:0;
@@ -103,11 +105,11 @@ body{
 }
 .input-box input{
     width:100%;
-    padding:12px;
+    padding:2px;
     font-size:16px;
     background:transparent;
-    border:none;
-    border-bottom:2px solid #fff;
+    border-collapse:collapse;
+    border-bottom:1px solid #fff;
     color:white;
     transition:.4s;
 }
@@ -212,10 +214,11 @@ th,td{
     margin-top:10px;
 }
 .adminBtns{
-    display:flex;
-    gap:10px;
-    margin-top:12px;
+    
+    gap:1px;
+    margin-top:2px;
 }
+
 .file-input{
     display:flex;
     gap:8px;
@@ -225,6 +228,34 @@ th,td{
     width:150px;
     padding:8px;
 }
+/* Winner popup styles */
+#winnerModal {
+  position: fixed;
+  left: 0; top: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.6);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
+#winnerModal .modalCard{
+  background: #111;
+  color: #fff;
+  padding: 26px;
+  border-radius: 12px;
+  width: 420px;
+  max-width: 90%;
+  text-align: center;
+  box-shadow: 0 8px 40px rgba(0,0,0,0.6);
+  border: 2px solid #e46033;
+}
+#winnerModal h2{ margin: 0 0 8px; font-size: 22px; }
+#winnerModal p{ margin: 6px 0 14px; font-size: 16px; }
+#winnerModal .bigName{ font-size: 28px; font-weight:700; color: #ffd46b; margin: 8px 0;}
+#winnerModal .modalBtns{ display:flex; gap:10px; justify-content:center; margin-top:12px; }
+#winnerModal .modalBtns .btn{ padding:10px 14px; border-radius:8px; cursor:pointer; border:0; background:#e46033; color:white; }
+#winnerModal .modalBtns .btn.secondary{ background:#444; }
+
 </style>
 </head>
 <body>
@@ -244,19 +275,38 @@ th,td{
         <p id="loginMsg" style="color:yellow;margin-top:10px;"></p>
         <div class="switch">New user? <span onclick="toggleForm()">Register</span></div>
     </div>
-    <div class="form-box Register">
-        <h1>BLDEA COLLEGE VOTING SYSTEM</h1>
-        <h2>Register</h2>
-        <!-- IDs changed to match JS -->
-        <div class="input-box" style="margin-top:0.1px;"><input id="regName" placeholder="Enter name"></div>
-        <div class="input-box" style="margin-top:0.1px;"><input id="regEmail" type="email" placeholder="Enter your email"></div>
-        <div class="input-box" style="margin-top:0.1px;"><input id="regPhone" type="tel" placeholder="Enter phone no"></div>
-        <div class="input-box" style="margin-top:0.1px;"><input id="regUSN" placeholder="Enter USN"></div>
-        <div class="input-box" style="margin-top:0.1px;"><input id="regPass" type="password" placeholder="Create Password"></div>
-        <button class="btn" onclick="registerStudent()">Register</button>
-        <p id="regMsg" style="color:yellow;margin-top:10px;"></p>
-        <div class="switch">Already registered? <span onclick="toggleForm()">Login</span></div>
-    </div>
+   <!-- ---------- REPLACE Register block WITH THIS ---------- -->
+<div class="form-box Register">
+  <h1>BLDEA COLLEGE VOTING SYSTEM</h1>
+  <h2>Register</h2>
+
+  <div class="input-box"style="margin-top:1px">
+    <input id="regName" name="regName" type="text" placeholder="Enter your name">
+  </div>
+
+  <div class="input-box"style="margin-top:1px">
+    <input id="regEmail" name="regEmail" type="email" placeholder="Enter your email">
+  </div>
+
+  <div class="input-box"style="margin-top:1px">
+    <input id="regPhone" name="regPhone" type="tel" placeholder="Enter phone no">
+  </div>
+
+  <div class="input-box"style="margin-top:1px">
+    <input id="regUSN" name="regUSN" type="text" placeholder="Enter USN">
+  </div>
+
+  <div class="input-box"style="margin-top:1px">
+    <input id="regPass" name="regPass" type="password" placeholder="Create password">
+  </div>
+
+  <!-- make sure type="button" so form does not auto-submit -->
+  <button type="button" class="btn" onclick="registerStudent()">Register</button>
+
+  <p id="regMsg" style="color:yellow;margin-top:10px;"></p>
+
+  <div class="switch">Already registered? <span onclick="toggleForm()">Login</span></div>
+</div>
     <div class="curved-shape"></div>
     <div class="curved-shape2"></div>
 </div>
@@ -292,11 +342,16 @@ th,td{
     <h2>Results</h2>
     <div id="results"></div>
 
-    <div class="adminBtns">
-        <button class="btn" onclick="downloadVotes()" style="background:#222">Download Votes (.xlsx)</button>
-        <button class="btn" onclick="resetVotes()" style="background:#222;">Reset Votes</button>
-        <button class="btn" onclick="closeAdminPanel()" style="background:#777;">Close Admin Panel</button>
-    </div>
+    <div class="adminBtns"style="margin-top:0.1px;">
+    <button class="btn"  onclick="downloadVotes()" style="background:#222">Download Votes (.xlsx)</button>
+    <button class="btn"onclick="downloadUsers()" style="background:#222">Download Registered Users (.xlsx)</button>
+    <button class="btn" onclick="resetVotes()" style="background:#222;">Reset Votes</button>
+    <!-- <--- This one must be here -->
+  <button class="btn"onclick="showWinner()" style="background:#222">Show Winner</button>
+    <button class="btn"onclick="closeAdminPanel()" style="background: #222;;">close admin panel</button>
+   
+</div>
+
 
     <br>
     <h2>Manage Candidates</h2>
@@ -316,6 +371,20 @@ th,td{
     </div>
  <div id="candTable"></div>
 </div>
+<!-- Winner modal (paste before </body>) -->
+<div id="winnerModal" class="hidden" aria-hidden="true" role="dialog" aria-labelledby="winnerTitle" aria-modal="true">
+  <div class="modalCard">
+    <h2 id="winnerTitle">Winner</h2>
+    <p id="winnerSubtitle"></p>
+    <div class="bigName" id="winnerNames"></div>
+    <p id="winnerCount" style="margin:6px 0 0;"></p>
+    <div class="modalBtns" style="margin-top:18px;">
+      <button class="btn" onclick="closeWinner()">OK</button>
+      <button class="btn secondary" onclick="closeWinner()">Close</button>
+    </div>
+  </div>
+</div>
+
 
 <script>
 /* --------------------
@@ -387,46 +456,91 @@ if(!localStorage.getItem('candidates')){
 /* --------------------
    REGISTER
 ----------------------*/
-function registerStudent(){
-
-    const name = document.getElementById('regName').value.trim();
-    const email = document.getElementById('regEmail').value.trim();
-    const phone = document.getElementById('regPhone').value.trim();
-    const usn = document.getElementById('regUSN').value.trim().toLowerCase();
-    const pass = document.getElementById('regPass').value.trim();
-
-    const regMsg = document.getElementById('regMsg');
-    regMsg.style.color = 'yellow';
-
-    if(!name || !email || !phone || !usn || !pass){
-        regMsg.innerText = "Enter all details";
-        return;
+function _getVal(ids){
+  // try a list of ids / names, return first non-empty trimmed value
+  for(const id of ids){
+    // try id
+    const byId = document.getElementById(id);
+    if(byId && (byId.value !== undefined)) {
+      const v = String(byId.value || '').trim();
+      if(v) return v;
     }
-
-    if(!allowedUSN.includes(usn)){
-        regMsg.innerText = "USN not allowed";
-        return;
+    // try name selector
+    const byName = document.querySelector('[name="'+id+'"]');
+    if(byName && (byName.value !== undefined)) {
+      const v = String(byName.value || '').trim();
+      if(v) return v;
     }
-
-    let users = JSON.parse(localStorage.getItem('users') || '{}');
-
-    if(users[usn]){
-        regMsg.innerText = "USN already registered";
-        return;
-    }
-
-    users[usn] = {
-        pass: pass,
-        name: name,
-        email: email,
-        phone: phone
-    };
-
-    localStorage.setItem("users", JSON.stringify(users));
-
-    regMsg.style.color = "lightgreen";
-    regMsg.innerText = "Registered! Login now.";
+  }
+  return '';
 }
+
+function registerStudent(){
+  const regMsg = document.getElementById('regMsg') || (function(){
+    const p = document.createElement('p'); p.id='regMsg'; p.style.color='yellow'; document.querySelector('.form-box.Register')?.appendChild(p); return p;
+  })();
+
+  // try common id variants as fallbacks
+  const name  = _getVal(['regName','regname','rname','name']);
+  const email = _getVal(['regEmail','regemail','remail','email']);
+  const phone = _getVal(['regPhone','regphone','rphone','phone']);
+  const usn   = (_getVal(['regUSN','regusn','rusn','usn']) || '').toLowerCase();
+  const pass  = _getVal(['regPass','regpass','rpass','password','pass']);
+
+  // As a final fallback: read visible inputs inside the Register box (first non-empty)
+  if(!name || !email || !phone || !usn || !pass){
+    const inputs = Array.from(document.querySelectorAll('.form-box.Register input'));
+    for(const input of inputs){
+      const id = input.id || input.name || '';
+      const v = (input.value||'').trim();
+      // assign if empty the first time
+      if(!name && (id.toLowerCase().includes('name') || !id) && v) name = v;
+      if(!email && (id.toLowerCase().includes('email') || !id) && v) email = v;
+      if(!phone && (id.toLowerCase().includes('phone') || id.toLowerCase().includes('tel') || !id) && v) phone = v;
+      if(!usn && (id.toLowerCase().includes('usn') || !id) && v) usn = v.toLowerCase();
+      if(!pass && (id.toLowerCase().includes('pass') || !id) && v) pass = v;
+    }
+  }
+
+  console.log('REGISTER DEBUG — values read:', { name, email, phone, usn, passPresent: !!pass });
+
+  // basic validation
+  regMsg.style.color = 'yellow';
+  if(!name || !email || !phone || !usn || !pass){
+    regMsg.innerText = "Enter all details";
+    console.warn('registerStudent validation failed — missing:', {
+      name: !!name, email: !!email, phone: !!phone, usn: !!usn, pass: !!pass
+    });
+    return;
+  }
+
+  // allowedUSN check (your list lives in allowedUSN array). If you want to disable this, comment the block below.
+  if(typeof allowedUSN !== 'undefined' && Array.isArray(allowedUSN) && allowedUSN.length){
+    if(!allowedUSN.includes(usn)){
+      regMsg.innerText = "USN not allowed";
+      console.warn('USN not allowed:', usn);
+      return;
+    }
+  }
+
+  // load users (object keyed by usn)
+  let users = {};
+  try { users = JSON.parse(localStorage.getItem('users') || '{}'); } catch(e) { users = {}; }
+
+  if(users[usn]){
+    regMsg.innerText = "USN already registered";
+    console.warn('USN already registered:', usn);
+    return;
+  }
+
+  // save user (do NOT store raw password in real app — this is demo)
+  users[usn] = { name, email, phone, pass, created: new Date().toISOString() };
+  localStorage.setItem('users', JSON.stringify(users));
+  regMsg.style.color = 'lightgreen';
+  regMsg.innerText = 'Registered! Login now.';
+  console.info('User registered:', usn);
+}
+
 
 /* --------------------
    LOGIN
@@ -582,24 +696,122 @@ function delCand(i){
 /* --------------------
    DOWNLOAD VOTES as real .xlsx using SheetJS
 ----------------------*/
-function downloadVotes(){
-    const votes=JSON.parse(localStorage.getItem('votes')||'[]');
-    const cand=JSON.parse(localStorage.getItem('candidates')||'[]');
-    const cmap = {};
-    cand.forEach(c=>cmap[c.id]={name:c.name,role:c.role,symbol:c.symbol});
-    const final = votes.map(v=>({
-        USN: v.usn,
-        Candidate: cmap[v.candidate]?.name || v.candidate,
-        Role: cmap[v.candidate]?.role || '',
-        Symbol: cmap[v.candidate]?.symbol || '',
-        Time: new Date(v.time).toLocaleString()
-    }));
-    if(final.length===0){ alert('No votes to download'); return; }
-    const ws = XLSX.utils.json_to_sheet(final);
+/* --------------------    DOWNLOAD REGISTERED USERS as .xlsx using SheetJS ----------------------*/
+function downloadUsers(){
+    // users are stored in localStorage as an object keyed by USN
+    const usersObj = JSON.parse(localStorage.getItem('users') || '{}');
+
+    // Convert to an array of rows for Excel
+    const rows = Object.keys(usersObj).map(usn => {
+        const u = usersObj[usn];
+        return {
+            USN: usn,
+            Name: u.name || '',
+            Email: u.email || '',
+            Phone: u.phone || '',
+            // do NOT include password in exports for privacy/security
+            // Password: u.pass || '' // (omit intentionally)
+        };
+    });
+
+    if(rows.length === 0){
+        alert('No registered users to download');
+        return;
+    }
+
+    // Build sheet & workbook and trigger download
+    const ws = XLSX.utils.json_to_sheet(rows);
     const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, 'Votes');
-    XLSX.writeFile(wb, 'bldea_votes.xlsx');
+    XLSX.utils.book_append_sheet(wb, ws, 'RegisteredUsers');
+    XLSX.writeFile(wb, 'bldea_registered_users.xlsx');
+   
 }
+/* --------------------
+   DOWNLOAD VOTES as real .xlsx using SheetJS
+----------------------*/
+function downloadVotes(){
+    try {
+        const votes = JSON.parse(localStorage.getItem('votes') || '[]');
+        const cand = JSON.parse(localStorage.getItem('candidates') || '[]');
+
+        // candidate map for quick lookup
+        const cmap = {};
+        cand.forEach(c => cmap[c.id] = { id: c.id, name: c.name||'', role: c.role||'', symbol: c.symbol||'' });
+
+        // Build rows for the Votes sheet (no large base64 data here)
+        const voteRows = votes.map(v => {
+            let timeStr = '';
+            try { timeStr = v && v.time ? new Date(v.time).toLocaleString() : ''; } catch (e) { timeStr = String(v.time || ''); }
+            const meta = cmap[v.candidate] || {};
+            return {
+                USN: v.usn || '',
+                CandidateID: v.candidate || '',
+                Candidate: meta.name || v.candidate || '',
+                Role: meta.role || '',
+                Time: timeStr
+            };
+        });
+
+        if(!voteRows.length){
+            alert('No votes to download');
+            return;
+        }
+
+        // Build rows for the Candidates sheet (shorten data URIs)
+        const candRows = (cand || []).map(c => {
+            const s = c.symbol || '';
+            // if symbol is a data: URI (base64), show a marker and the mime type (no long base64)
+            if(s.startsWith && s.startsWith('data:')){
+                // e.g. data:image/png;base64,AAA...
+                const mime = s.split(';')[0].replace('data:','') || 'image';
+                return { ID: c.id, Name: c.name || '', Role: c.role || '', Symbol: `[embedded ${mime}]` };
+            }
+            // otherwise keep the url or short string
+            return { ID: c.id, Name: c.name || '', Role: c.role || '', Symbol: s || '' };
+        });
+
+        // Use SheetJS if available to make a workbook with two sheets
+        if(typeof XLSX !== 'undefined' && XLSX && XLSX.utils && typeof XLSX.writeFile === 'function'){
+            const ws1 = XLSX.utils.json_to_sheet(voteRows);
+            const ws2 = XLSX.utils.json_to_sheet(candRows);
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws1, 'Votes');
+            XLSX.utils.book_append_sheet(wb, ws2, 'Candidates');
+            const ts = new Date().toISOString().replace(/[:.]/g,'-');
+            const filename = `bldea_votes_${ts}.xlsx`;
+            XLSX.writeFile(wb, filename);
+            console.info('Downloaded XLSX:', filename);
+            return;
+        }
+
+        // Fallback: CSV for votes (and a separate CSV for candidates) zipped-like: download votes CSV only
+        console.warn('SheetJS not found — falling back to CSV (votes only).');
+        const header = Object.keys(voteRows[0]);
+        const csvLines = [ header.join(',') ];
+        for(const r of voteRows){
+            csvLines.push(header.map(h => {
+                const cell = (r[h] === undefined || r[h] === null) ? '' : String(r[h]);
+                return `"${cell.replace(/"/g,'""')}"`;
+            }).join(','));
+        }
+        const csv = csvLines.join('\r\n');
+        const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+        const a = document.createElement('a');
+        const url = URL.createObjectURL(blob);
+        a.href = url;
+        const ts2 = new Date().toISOString().replace(/[:.]/g,'-');
+        a.download = `bldea_votes_${ts2}.csv`;
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        URL.revokeObjectURL(url);
+    } catch(err){
+        console.error('downloadVotes error:', err);
+        alert('Failed to prepare votes for download. See console for details.');
+    }
+}
+
+
 /* --------------------
    RESET VOTES
 ----------------------*/
@@ -612,6 +824,84 @@ function resetVotes(){ if(!confirm('Reset all votes?')) return; localStorage.rem
     const usn=sessionStorage.getItem('usn');
     if(usn){ document.getElementById('authBox').classList.add('hidden'); document.getElementById('mainHeader').classList.remove('hidden'); document.getElementById('vote').classList.remove('hidden'); document.getElementById('adminBtn').style.display='inline-block'; loadVotePage(); }
 })();
+function showWinner(){
+  try {
+    const candidates = JSON.parse(localStorage.getItem('candidates') || '[]');
+    const votes = JSON.parse(localStorage.getItem('votes') || '[]');
+
+    if(!candidates.length){
+      alert('No candidates available');
+      return;
+    }
+
+    if(!votes.length){
+      alert('No votes yet');
+      return;
+    }
+
+    const counts = {};
+    candidates.forEach(c => counts[c.id] = 0);
+
+    votes.forEach(v => {
+      if(v && v.candidate && counts[v.candidate] !== undefined){
+        counts[v.candidate]++;
+      }
+    });
+
+    let max = -1;
+    for(const id in counts){
+      if(counts[id] > max) max = counts[id];
+    }
+
+    const winners = [];
+    for(const id in counts){
+      if(counts[id] === max){
+        const c = candidates.find(x => x.id === id) || {};
+        winners.push({
+          id,
+          name: c.name || id,
+          role: c.role || '',
+          symbol: c.symbol || ''
+        });
+      }
+    }
+
+    const titleEl = document.getElementById('winnerTitle');
+    const subtitleEl = document.getElementById('winnerSubtitle');
+    const namesEl = document.getElementById('winnerNames');
+    const countEl = document.getElementById('winnerCount');
+    if(winners.length === 1){
+  // Add Congrats + Winner Name
+  titleEl.innerText = `🎉 Congrats ${winners[0].name}! 🎉`;
+
+  subtitleEl.innerText = 'The winner is:';
+  namesEl.innerText = winners[0].name + (winners[0].role ? ' — ' + winners[0].role : '');
+  countEl.innerText = `Votes: ${max}`;
+}
+
+   else {
+      titleEl.innerText = 'Tie!';
+      subtitleEl.innerText = `${winners.length} candidates have equal votes`;
+      namesEl.innerHTML = winners.map(w => `${w.name}${w.role ? ' — ' + w.role : ''}`).join(', ');
+      countEl.innerText = `Each has ${max} votes`;
+    }
+
+    const modal = document.getElementById('winnerModal');
+    modal.style.display = 'flex';
+    modal.classList.remove('hidden');
+
+  } catch(err){
+    console.error(err);
+    alert('Error calculating winner.');
+  }
+}
+
+function closeWinner(){
+  const modal = document.getElementById('winnerModal');
+  modal.style.display = 'none';
+  modal.classList.add('hidden');
+}
+
 </script>
 </body>
 </html>
